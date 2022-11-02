@@ -14,11 +14,23 @@ import java.util.Iterator;
 public class UserService extends Service<Long, User> {
     IService<Long, Friendship> friendshipService;
 
+    /**
+     * Creates new service for users
+     * @param repo users repo to handle
+     * @param fserv friendship service to communicate with
+     */
     public UserService(IRepo<Long, User> repo, IService<Long, Friendship> fserv) {
         super(repo);
         friendshipService = fserv;
     }
 
+    /**
+     * removes user with specified id and also all the friendships it is part of
+     * @param id id of entity to remove
+     * @return remove report containing removed user and removed friendships
+     * @throws EntityIdNotFoundException if user id was not found
+     */
+    @Override
     public AbstractReport remove(Long id) throws EntityIdNotFoundException {
         CombinedReport report = new CombinedReport();
 

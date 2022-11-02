@@ -6,6 +6,11 @@ import domain.validators.IValidator;
 import java.util.List;
 
 public class UserFileRepo extends  FileRepo<Long, User> {
+    /**
+     * Creates new file repo for users
+     * @param fileName users file name
+     * @param validator user validator
+     */
     public UserFileRepo(String fileName, IValidator<User> validator) {
         super(fileName, validator);
     }

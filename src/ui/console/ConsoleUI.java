@@ -26,6 +26,10 @@ public class ConsoleUI {
         e.printStackTrace();
     }
 
+    /**
+     * runs one command
+     * @return true if execution continues, false if exit
+     */
     public boolean runStep() {
         System.out.print(">>> ");
         String line = scan.nextLine();
@@ -58,6 +62,9 @@ public class ConsoleUI {
         return true;
     }
 
+    /**
+     * run loop
+     */
     public void run() {
         while(runStep());
     }

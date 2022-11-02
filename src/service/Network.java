@@ -71,6 +71,22 @@ public class Network {
         return result;
     }
 
+    /**
+     * @return the community with the longest path
+     */
+    public Community mostSociableCommunity() {
+        Community result = null;
+        int max = 0;
+        for(Community c : getCommunities()) {
+            int cnt = c.getLongestPathLength();
+            if(cnt>max) {
+                max = cnt;
+                result = c;
+            }
+        }
+        return result;
+    }
+
     public int communitiesCount() {
         return getCommunities().size();
     }

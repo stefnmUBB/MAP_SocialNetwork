@@ -10,6 +10,10 @@ public class InMemoryRepo<ID, E extends Entity<ID>> implements IRepo<ID, E> {
     final Map<ID, E> entities = new TreeMap<>();
     final IValidator<E> validator;
 
+    /**
+     * Creates a new in memory repo for entities
+     * @param validator entity validator
+     */
     InMemoryRepo(IValidator<E> validator) {
         this.validator = validator;
     }

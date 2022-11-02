@@ -5,9 +5,19 @@ import java.io.Serializable;
 public class Entity<ID> {
     private ID id;
 
+    /**
+     * Retrieves entity Id
+     * @return Id of entity
+     */
+
     public ID getId() {
         return id;
     }
+
+    /**
+     * Assigns an id to the entity
+     * @param id new id of the entity
+     */
 
     public void setId(ID id) {
         this.id = id;

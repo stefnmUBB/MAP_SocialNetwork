@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * a report containing multiple reports
+ */
 public class CombinedReport extends AbstractReport {
     private final List<AbstractReport> reports = new ArrayList<>();
 

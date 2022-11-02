@@ -14,6 +14,10 @@ import java.util.function.Predicate;
 public abstract class Service<ID, E extends Entity<ID>> implements IService<ID, E> {
     IRepo<ID, E> repo;
 
+    /**
+     * Creates new service
+     * @param repo repo to handle
+     */
     public Service(IRepo<ID, E> repo) {
         this.repo = repo;
     }
@@ -38,8 +42,7 @@ public abstract class Service<ID, E extends Entity<ID>> implements IService<ID, 
         return ReportFactory.getInstance().createReport(ReportType.REMOVE, e);
     }
 
-    protected IRepo<ID,E> getRepo() {return repo;}
-
+    @Override
     public boolean exists(Predicate<E> pred)
     {
         for(E entity: repo.getAll()) {
@@ -49,6 +52,7 @@ public abstract class Service<ID, E extends Entity<ID>> implements IService<ID, 
         return false;
     }
 
+    @Override
     public Iterable<E> getAll() {
         return repo.getAll();
     }

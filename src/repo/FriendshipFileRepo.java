@@ -6,6 +6,11 @@ import domain.validators.IValidator;
 import java.util.List;
 
 public class FriendshipFileRepo extends FileRepo<Long, Friendship> {
+    /**
+     * Creates new file repo for friendship
+     * @param fileName friendships file name
+     * @param validator friendship validator
+     */
     public FriendshipFileRepo(String fileName, IValidator<Friendship> validator) {
         super(fileName, validator);
     }

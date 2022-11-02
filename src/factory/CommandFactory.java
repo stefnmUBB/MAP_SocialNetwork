@@ -42,6 +42,8 @@ public class CommandFactory {
 
         types.put("printargs", PrintArgsCommand.class);
 
+        types.put("msc", MSCCommand.class);
+
     };
 
     public Command generateCommand(String cmd, CommandContext context)

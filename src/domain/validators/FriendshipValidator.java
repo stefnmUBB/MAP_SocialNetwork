@@ -8,10 +8,21 @@ public class FriendshipValidator implements IValidator<Friendship> {
 
     IRepo<Long, User> context;
 
+    /**
+     * Creates a new friendship validator instance based on a repo as validation context
+     * @param context the users repo in which the friendship should be valid
+     */
     public FriendshipValidator(IRepo<Long, User> context) {
         this.context = context;
     }
 
+    /**
+     * Validates a friendship in the specified context
+     * The partners of a friendship must be different and must all exist in the users repo.
+     * @param entity entity to validate
+     * @throws ValidationException if the two parts of the friendship are identical, or at least
+     * one of the participants does not exist in the context
+     */
     @Override
     public void validate(Friendship entity) throws ValidationException {
         Long id1 = entity.getUserIds()[0];

@@ -1,5 +1,8 @@
 package domain.validators;
 
+/**
+ * Exception that is thrown when a validation fails
+ */
 public class ValidationException extends RuntimeException {
     public ValidationException() {
     }

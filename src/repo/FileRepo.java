@@ -11,12 +11,23 @@ import java.util.Objects;
 public abstract class FileRepo<ID, E extends Entity<ID>> extends InMemoryRepo<ID,E> {
     String fileName;
 
+    /**
+     * Creates new file repository instance
+     * @param fileName file name
+     * @param validator entity validator
+     */
     FileRepo(String fileName, IValidator<E> validator) {
         super(validator);
         this.fileName=fileName;
         load();
     }
 
+    /**
+     * adds new entity to the repo
+     * @param entity entity to be added
+     * @return added entity
+     * @throws EntityAlreadyExistsException if the entity id is already found in the repo
+     */
     public E add(E entity) throws EntityAlreadyExistsException {
         entity = super.add(entity);
         if(entity!=null) {
@@ -25,6 +36,11 @@ public abstract class FileRepo<ID, E extends Entity<ID>> extends InMemoryRepo<ID
         return entity;
     }
 
+    /**
+     * updates entity by id
+     * @param entity new entity with modified properties
+     * @return modified entity
+     */
     public E update(E entity){
         entity = super.update(entity);
 
@@ -33,6 +49,11 @@ public abstract class FileRepo<ID, E extends Entity<ID>> extends InMemoryRepo<ID
         return entity;
     }
 
+    /**
+     * remove entity from the repo
+     * @param id Id of entity to delete
+     * @return removed entity
+     */
     public E remove(ID id){
         E entity = super.remove(id);
         if(entity!=null) {
@@ -41,9 +62,23 @@ public abstract class FileRepo<ID, E extends Entity<ID>> extends InMemoryRepo<ID
         return entity;
     }
 
+    /**
+     * Creates new entity based on a list of text attributes
+     * @param attributes list of attributes that are used to create the entity
+     * @return resulted entity from the attributes
+     */
     public abstract E extractEntity(List<String> attributes);
+
+    /**
+     * Converts entity to string to be saved in file
+     * @param entity entity to save
+     * @return save string
+     */
     public abstract String entityAsString(E entity);
 
+    /**
+     * loads the repo data from file
+     */
     private void load() {
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String linie;
@@ -64,6 +99,10 @@ public abstract class FileRepo<ID, E extends Entity<ID>> extends InMemoryRepo<ID
         }
     }
 
+    /**
+     * saves an entity at the end of the file
+     * @param entity entity to be saved
+     */
     private void saveAppend(E entity) {
         try {
             File file = new File(fileName);
@@ -79,6 +118,9 @@ public abstract class FileRepo<ID, E extends Entity<ID>> extends InMemoryRepo<ID
         }
     }
 
+    /**
+     * save all entities
+     */
     private void saveAll() {
         try (BufferedWriter bW = new BufferedWriter(new FileWriter(fileName,false))) {
             for(var entity : getAll()) {

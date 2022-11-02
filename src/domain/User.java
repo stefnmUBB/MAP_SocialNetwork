@@ -7,6 +7,17 @@ public class User extends Entity<Long> {
     private String password;
     private Integer age;
 
+    /**
+     * Creates a new User instance
+     * @param firstName User first name
+     * @param lastName User last name
+     * @param email User email
+     * @param password User password
+     * @param age User age (14..100)
+     *
+     * @see domain.validators.NameValidator
+     * @see domain.validators.EmailValidator
+     */
     public User(String firstName, String lastName, String email, String password, Integer age) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -15,6 +26,10 @@ public class User extends Entity<Long> {
         this.age = age;
     }
 
+    /**
+     * Creates text representation of the User instance
+     * @return String obtained from User's properties
+     */
     @Override
     public String toString() {
         return "User{" +
@@ -27,6 +42,10 @@ public class User extends Entity<Long> {
                 '}';
     }
 
+    /**
+     * Retrieves user first name
+     * @return user first name
+     */
     public String getFirstName() {
         return firstName;
     }
@@ -35,6 +54,10 @@ public class User extends Entity<Long> {
         this.firstName = firstName;
     }
 
+    /**
+     * Retreives user last name
+     * @return user last name
+     */
     public String getLastName() {
         return lastName;
     }
@@ -43,6 +66,10 @@ public class User extends Entity<Long> {
         this.lastName = lastName;
     }
 
+    /**
+     * Retrieves user email
+     * @return user email
+     */
     public String getEmail() {
         return email;
     }
@@ -51,6 +78,10 @@ public class User extends Entity<Long> {
         this.email = email;
     }
 
+    /**
+     * Retrieves user password (kinda...)
+     * @return user password
+     */
     public String getPassword() {
         return password;
     }
@@ -59,6 +90,10 @@ public class User extends Entity<Long> {
         this.password = password;
     }
 
+    /**
+     * Retrieves age of the user
+     * @return user age
+     */
     public Integer getAge() {
         return age;
     }
