@@ -44,6 +44,9 @@ public class CommandFactory {
 
         types.put("msc", MSCCommand.class);
 
+        types.put("messages-from", ViewMessagesFromCommand.class);
+        types.put("post", PostMessageCommand.class);
+
     };
 
     public Command generateCommand(String cmd, CommandContext context)

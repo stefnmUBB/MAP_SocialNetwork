@@ -48,7 +48,9 @@ public class ConsoleUI {
             } catch(ValidationException e) {
                 System.out.println("Could not execute operation.");
                 System.out.println(e.getMessage());
-
+            } catch(NumberFormatException e){
+                System.out.println("Could not parse number.");
+                System.out.println(e.getMessage());
             }
 
         } catch (NoSuchMethodException | InvocationTargetException |

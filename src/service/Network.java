@@ -12,6 +12,8 @@ import reports.AbstractReport;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class Network {
     private IService<Long, User> userServ;
@@ -58,6 +60,16 @@ public class Network {
 
     public Iterable<Friendship> getAllFriendships() {
         return friendshipServ.getAll();
+    }
+
+    public Iterable<Message> getMessagesFrom(Long authorID) {
+        return StreamSupport.stream(messageServ.getAll().spliterator(),false)
+                .filter(m->m.getAuthorID().equals(authorID))
+                .collect(Collectors.toList());
+    }
+
+    public AbstractReport postMessage(Message m) throws EntityAlreadyExistsException {
+        return messageServ.add(m);
     }
 
     public List<Community> getCommunities() {

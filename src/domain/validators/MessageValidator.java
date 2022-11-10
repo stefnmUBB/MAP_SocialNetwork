@@ -13,7 +13,7 @@ public class MessageValidator implements IValidator<Message> {
         if(content.length()<=3) {
             throw new ValidationException("Message content too short");
         }
-        if(!content.matches("^[a-zA-Z0-9.-]*$")){
+        if(!content.matches("^[a-zA-Z0-9.\\-! ]*$")){
             throw new ValidationException("Invalid characters detected in message content");
         }
     }
