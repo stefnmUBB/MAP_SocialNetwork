@@ -74,7 +74,9 @@ public class Community {
             for(var v : adj.get(u)) {
                 if(u<v) {
                     paths.add(new Path(u,v));
+                    paths.add(new Path(v,u));
                     edges.add(new Path(u,v));
+                    edges.add(new Path(v,u));
                 }
             }
         }
@@ -88,6 +90,7 @@ public class Community {
                     if (path.canJoin(e)) {
                         var p = path.join(e);
                         store.add(p);
+                        System.out.println(p);
                         lenmax = max(lenmax, p.length());
                         cnt++;
                     }

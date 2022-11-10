@@ -1,21 +1,28 @@
 package domain;
 
+import utils.Constants;
+
+import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Locale;
+import java.util.Objects;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 public class Friendship extends Entity<Long> {
     Long[] uids = new Long[2];
+    LocalDateTime friendsFrom;
 
     /**
      * Creates a new friendship instance
      * @param userId1 one of the friend's Id
      * @param userId2 the other friend's Id
      */
-    public Friendship(Long userId1, Long userId2) {
+    public Friendship(Long userId1, Long userId2, LocalDateTime friendsFrom) {
         uids[0] = min(userId1, userId2);
         uids[1] = max(userId1, userId2);
+        this.friendsFrom = friendsFrom;
     }
 
     /**
@@ -24,6 +31,14 @@ public class Friendship extends Entity<Long> {
      */
     public Long[] getUserIds() {
         return uids;
+    }
+
+    /**
+     * get date friendship was made
+     * @return date since the two users are friends
+     */
+    public LocalDateTime getFriendsFrom() {
+        return friendsFrom;
     }
 
     /**
@@ -40,6 +55,7 @@ public class Friendship extends Entity<Long> {
      * @param o the object to check
      * In order for the object to be eligible for check, it must a non-null
      * friendship instance. It must also have the same ids as the instance it is compared to
+     * and the same date
      * @return true if the two instances are equal, false otherwise
      */
     @Override
@@ -55,16 +71,23 @@ public class Friendship extends Entity<Long> {
      * @return String containing user-friendly friendship data
      */
     @Override
+    public int hashCode() {
+        int result = Objects.hash(friendsFrom);
+        result = 31 * result + Arrays.hashCode(uids);
+        return result;
+    }
+
+    /**
+     * Gets a text representation of the friendship
+     * @return String containing user-friendly friendship data
+     */
+    @Override
     public String toString() {
         return "Friendship{" +
                 "ID=" + getId() +
                 ", uids=" + Arrays.toString(uids) +
+                ", friendsFrom=" + friendsFrom.format(Constants.DATE_TIME_FORMATTER) +
                 '}';
-    }
-
-    @Override
-    public int hashCode() {
-        return Arrays.hashCode(uids);
     }
 
     /**

@@ -56,4 +56,6 @@ public abstract class Service<ID, E extends Entity<ID>> implements IService<ID, 
     public Iterable<E> getAll() {
         return repo.getAll();
     }
+
+
 }

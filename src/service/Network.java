@@ -2,13 +2,12 @@ package service;
 
 import config.AppContext;
 import domain.Friendship;
+import domain.Message;
 import domain.User;
 import domain.validators.FriendshipValidator;
+import domain.validators.MessageValidator;
 import domain.validators.UserValidator;
-import repo.EntityAlreadyExistsException;
-import repo.FriendshipFileRepo;
-import repo.IRepo;
-import repo.UserFileRepo;
+import repo.*;
 import reports.AbstractReport;
 
 import java.util.ArrayList;
@@ -18,9 +17,15 @@ public class Network {
     private IService<Long, User> userServ;
     private IService<Long, Friendship> friendshipServ;
 
-    public Network(IService<Long, User> userServ, IService<Long, Friendship> friendshipServ) {
+    private IService<Long, Message> messageServ;
+
+    public Network(
+            IService<Long, User> userServ,
+            IService<Long, Friendship> friendshipServ,
+            IService<Long, Message> messageServ) {
         this.userServ = userServ;
         this.friendshipServ = friendshipServ;
+        this.messageServ = messageServ;
     }
 
     public AbstractReport addUser(User u) throws EntityAlreadyExistsException {return userServ.add(u);}
@@ -37,9 +42,14 @@ public class Network {
                 new UserFileRepo(AppContext.USERS_FILE_NAME, new UserValidator());
         FriendshipFileRepo friendshipsRepo =
                 new FriendshipFileRepo(AppContext.FRIENDSHIPS_FILE_NAME, new FriendshipValidator(usersRepo));
+
+        MessageFileRepo messageRepo =
+                new MessageFileRepo(AppContext.MESSAGES_FILE_NAME, new MessageValidator());
+
         FriendshipService friendshipsServ = new FriendshipService(friendshipsRepo);
         UserService usersServ = new UserService(usersRepo, friendshipsServ);
-        return new Network(usersServ, friendshipsServ);
+        MessageService messageServ = new MessageService(messageRepo);
+        return new Network(usersServ, friendshipsServ, messageServ);
     }
 
     public Iterable<User> getAllUsers() {

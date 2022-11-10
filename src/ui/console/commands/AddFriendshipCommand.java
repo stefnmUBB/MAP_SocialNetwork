@@ -5,6 +5,8 @@ import domain.User;
 import repo.EntityAlreadyExistsException;
 import reports.AbstractReport;
 
+import java.time.LocalDateTime;
+
 public class AddFriendshipCommand extends Command {
     public AddFriendshipCommand(Object[] args, CommandContext context) {
         super("add-frienship", args, context);
@@ -14,7 +16,8 @@ public class AddFriendshipCommand extends Command {
         try {
             Friendship f = new Friendship(
                 Long.parseLong((String)args[0]),
-                Long.parseLong((String)args[1])
+                Long.parseLong((String)args[1]),
+                LocalDateTime.now()
             );
             AbstractReport report = context.getNetwork().addFriendship(f);
             return report;

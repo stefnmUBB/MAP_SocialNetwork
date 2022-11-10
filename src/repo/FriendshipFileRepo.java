@@ -2,7 +2,9 @@ package repo;
 
 import domain.Friendship;
 import domain.validators.IValidator;
+import utils.Constants;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class FriendshipFileRepo extends FileRepo<Long, Friendship> {
@@ -20,7 +22,8 @@ public class FriendshipFileRepo extends FileRepo<Long, Friendship> {
         Long id = Long.parseLong(attributes.get(0));
         Long uid1 = Long.parseLong(attributes.get(1));
         Long uid2 = Long.parseLong(attributes.get(2));
-        Friendship f = new Friendship(uid1, uid2);
+        LocalDateTime friendsFrom = LocalDateTime.parse(attributes.get(3),Constants.DATE_TIME_FORMATTER);
+        Friendship f = new Friendship(uid1, uid2, friendsFrom);
         f.setId(id);
         return f;
     }
@@ -32,6 +35,7 @@ public class FriendshipFileRepo extends FileRepo<Long, Friendship> {
                 entity.getId().toString(),
                 entity.getUserIds()[0].toString(),
                 entity.getUserIds()[1].toString(),
+                entity.getFriendsFrom().format(Constants.DATE_TIME_FORMATTER)
         };
         return String.join(";", vals);
     }

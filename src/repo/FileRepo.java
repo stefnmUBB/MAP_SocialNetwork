@@ -2,6 +2,7 @@ package repo;
 
 import domain.Entity;
 import domain.validators.IValidator;
+import domain.validators.ValidationException;
 
 import java.io.*;
 import java.util.Arrays;
@@ -80,9 +81,11 @@ public abstract class FileRepo<ID, E extends Entity<ID>> extends InMemoryRepo<ID
      * loads the repo data from file
      */
     private void load() {
+        int linecnt = 0;
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String linie;
             while((linie=br.readLine())!=null) {
+                linecnt++;
                 if(Objects.equals(linie,"")) {
                     System.out.println("[DBG] Empty line");
                 }
@@ -91,11 +94,28 @@ public abstract class FileRepo<ID, E extends Entity<ID>> extends InMemoryRepo<ID
                 super.add(e);
             }
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            System.out.println("File not found "+fileName);
+            System.exit(-4);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (EntityAlreadyExistsException e) {
             throw new RuntimeException(e);
+        }
+        catch(ArrayIndexOutOfBoundsException e){
+            System.out.println("Incomplete entity in "+fileName+" at Line "+linecnt);
+            System.out.println("File is possibly corrupt.");
+            System.exit(-1);
+        }
+        catch(NumberFormatException e){
+            System.out.println("Number parse error in "+fileName+" at Line "+linecnt);
+            System.out.println("File is possibly corrupt.");
+            System.exit(-2);
+        }
+        catch(ValidationException e){
+            System.out.println("Failed to validate entity in "+fileName+" at Line "+linecnt);
+            System.out.println(e.getMessage());
+            System.out.println("File is possibly corrupt.");
+            System.exit(-3);
         }
     }
 

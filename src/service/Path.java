@@ -24,6 +24,18 @@ public class Path {
         if ( !(this.head().equals(path.tail())
             || this.tail().equals(path.head())))
             return false;
+
+        if ( (this.head().equals(path.head())
+                || this.tail().equals(path.tail())))
+            return false;
+
+        for(int i=1;i<this.nodes.size()-1;i++) {
+            for(var y : path.nodes) {
+                if(nodes.get(i).equals(y)) {
+                    return false;
+                }
+            }
+        }
         return true;
     }
 
