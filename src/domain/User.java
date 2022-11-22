@@ -7,6 +7,8 @@ public class User extends Entity<Long> {
     private String password;
     private Integer age;
 
+    public User() { }
+
     /**
      * Creates a new User instance
      * @param firstName User first name

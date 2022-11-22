@@ -23,7 +23,5 @@ public class PostMessageCommand extends Command {
         catch(EntityAlreadyExistsException e) {
             return "Could not post message";
         }
-
-
     }
 }

@@ -10,6 +10,7 @@ import domain.validators.UserValidator;
 import repo.*;
 import reports.AbstractReport;
 
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,13 +41,16 @@ public class Network {
     public AbstractReport removeFriendship(Long fid) throws EntityIdNotFoundException { return friendshipServ.remove(fid);}
 
     public static Network loadDefaultNetwork() {
-        UserFileRepo usersRepo =
-                new UserFileRepo(AppContext.USERS_FILE_NAME, new UserValidator());
-        FriendshipFileRepo friendshipsRepo =
-                new FriendshipFileRepo(AppContext.FRIENDSHIPS_FILE_NAME, new FriendshipValidator(usersRepo));
+        IRepo<Long, User> usersRepo =
+                //new UserFileRepo(AppContext.USERS_FILE_NAME, new UserValidator());
+                new DatabaseRepo<>(User.class);
+        IRepo<Long, Friendship> friendshipsRepo =
+                //new FriendshipFileRepo(AppContext.FRIENDSHIPS_FILE_NAME, new FriendshipValidator(usersRepo));
+                new DatabaseRepo<>(Friendship.class);
 
-        MessageFileRepo messageRepo =
-                new MessageFileRepo(AppContext.MESSAGES_FILE_NAME, new MessageValidator());
+        IRepo<Long, Message> messageRepo =
+                //new MessageFileRepo(AppContext.MESSAGES_FILE_NAME, new MessageValidator());
+                new DatabaseRepo<>(Message.class);
 
         FriendshipService friendshipsServ = new FriendshipService(friendshipsRepo);
         UserService usersServ = new UserService(usersRepo, friendshipsServ);

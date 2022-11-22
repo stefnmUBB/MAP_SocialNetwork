@@ -11,8 +11,11 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 public class Friendship extends Entity<Long> {
-    Long[] uids = new Long[2];
+    Long uid1;
+    Long uid2;
     LocalDateTime friendsFrom;
+
+    public Friendship(){}
 
     /**
      * Creates a new friendship instance
@@ -20,8 +23,8 @@ public class Friendship extends Entity<Long> {
      * @param userId2 the other friend's Id
      */
     public Friendship(Long userId1, Long userId2, LocalDateTime friendsFrom) {
-        uids[0] = min(userId1, userId2);
-        uids[1] = max(userId1, userId2);
+        uid1= min(userId1, userId2);
+        uid2 = max(userId1, userId2);
         this.friendsFrom = friendsFrom;
     }
 
@@ -30,7 +33,7 @@ public class Friendship extends Entity<Long> {
      * @return array of two friend users
      */
     public Long[] getUserIds() {
-        return uids;
+        return new Long[]{uid1, uid2};
     }
 
     /**
@@ -47,7 +50,7 @@ public class Friendship extends Entity<Long> {
      * @return true if user represents one end of the friendship, false otherwise
      */
     public boolean containsUser(Long id) {
-        return uids[0].equals(id) || uids[1].equals(id);
+        return uid1.equals(id) || uid2.equals(id);
     }
 
     /**
@@ -63,7 +66,7 @@ public class Friendship extends Entity<Long> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Friendship that = (Friendship) o;
-        return Arrays.equals(uids, that.uids);
+        return uid1.equals(that.uid1) && uid2.equals(that.uid2);
     }
 
     /**
@@ -72,9 +75,7 @@ public class Friendship extends Entity<Long> {
      */
     @Override
     public int hashCode() {
-        int result = Objects.hash(friendsFrom);
-        result = 31 * result + Arrays.hashCode(uids);
-        return result;
+        return Objects.hash(uid1, uid2, friendsFrom);
     }
 
     /**
@@ -84,9 +85,9 @@ public class Friendship extends Entity<Long> {
     @Override
     public String toString() {
         return "Friendship{" +
-                "ID=" + getId() +
-                ", uids=" + Arrays.toString(uids) +
-                ", friendsFrom=" + friendsFrom.format(Constants.DATE_TIME_FORMATTER) +
+                "uid1=" + uid1 +
+                ", uid2=" + uid2 +
+                ", friendsFrom=" + friendsFrom +
                 '}';
     }
 
@@ -100,7 +101,7 @@ public class Friendship extends Entity<Long> {
      * @return the other user in the friendship, or any of the friends if the user is not part of friendship
      */
     public Long getTheOtherOne(Long id) {
-        return id.equals(uids[0]) ? uids[1] : uids[0];
+        return id.equals(uid1) ? uid2 : uid1;
     }
 }
 
