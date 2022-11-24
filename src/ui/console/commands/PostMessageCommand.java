@@ -11,6 +11,10 @@ public class PostMessageCommand extends Command {
     }
 
     public Object execute() {
+        if(args.length!=2){
+            System.out.println(help());
+            return null;
+        }
         var id = Long.parseLong(args[0].toString());
         var content = (String)args[1];
         var date = LocalDateTime.now();
@@ -23,5 +27,10 @@ public class PostMessageCommand extends Command {
         catch(EntityAlreadyExistsException e) {
             return "Could not post message";
         }
+    }
+
+    @Override
+    public String help() {
+        return "post <id> <content>";
     }
 }

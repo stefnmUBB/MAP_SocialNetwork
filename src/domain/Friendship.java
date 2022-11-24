@@ -3,6 +3,7 @@ package domain;
 import utils.Constants;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
@@ -66,7 +67,10 @@ public class Friendship extends Entity<Long> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Friendship that = (Friendship) o;
-        return uid1.equals(that.uid1) && uid2.equals(that.uid2);
+        return Arrays.equals(
+                Arrays.asList(uid1, uid2).toArray(),
+                Arrays.asList(that.uid1, that.uid2).toArray()
+        );
     }
 
     /**
@@ -85,7 +89,8 @@ public class Friendship extends Entity<Long> {
     @Override
     public String toString() {
         return "Friendship{" +
-                "uid1=" + uid1 +
+                "ID=" + getId() +
+                ", uid1=" + uid1 +
                 ", uid2=" + uid2 +
                 ", friendsFrom=" + friendsFrom +
                 '}';
@@ -101,7 +106,7 @@ public class Friendship extends Entity<Long> {
      * @return the other user in the friendship, or any of the friends if the user is not part of friendship
      */
     public Long getTheOtherOne(Long id) {
-        return id.equals(uid1) ? uid2 : uid1;
+        return uid1+uid2-id; // id.equals(uid1) ? uid2 : uid1;
     }
 }
 

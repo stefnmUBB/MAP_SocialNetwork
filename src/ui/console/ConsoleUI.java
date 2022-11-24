@@ -3,11 +3,13 @@ package ui.console;
 import domain.validators.ValidationException;
 import factory.CommandFactory;
 import factory.InnerCommandFailedException;
+import org.postgresql.util.PSQLException;
 import service.Network;
 import ui.console.commands.Command;
 import ui.console.commands.CommandContext;
 
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -30,7 +32,7 @@ public class ConsoleUI {
      * runs one command
      * @return true if execution continues, false if exit
      */
-    public boolean runStep() {
+    public boolean runStep() throws  SQLException{
         System.out.print(">>> ");
         String line = scan.nextLine();
         try {
@@ -67,7 +69,7 @@ public class ConsoleUI {
     /**
      * run loop
      */
-    public void run() {
+    public void run() throws SQLException {
         while(runStep());
     }
 }

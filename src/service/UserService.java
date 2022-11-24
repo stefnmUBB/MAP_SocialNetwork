@@ -34,7 +34,6 @@ public class UserService extends Service<Long, User> {
     public AbstractReport remove(Long id) throws EntityIdNotFoundException {
         CombinedReport report = new CombinedReport();
 
-
         var col = (Collection<? extends Friendship>) friendshipService.getAll();
         for(Friendship f : new ArrayList<Friendship>(col)) { // clone to avoid ConcurrentModifficationException
             if(f.containsUser(id)) {

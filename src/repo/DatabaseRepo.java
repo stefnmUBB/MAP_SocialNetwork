@@ -1,6 +1,7 @@
 package repo;
 
 import domain.Entity;
+import domain.validators.IValidator;
 import utils.Constants;
 
 import java.lang.reflect.Field;
@@ -14,20 +15,24 @@ public class DatabaseRepo<ID extends Long, E extends Entity<ID>> implements IRep
     private final String url;
     private final String username;
     private final String password;
-    public DatabaseRepo(Class<E> type) {
+
+    final IValidator<E> validator;
+    public DatabaseRepo(Class<E> type, IValidator<E> validator) {
         this(type,"jdbc:postgresql://localhost:5432/SocialNetwork",
-                "postgres","0000");
+                "postgres","0000", validator);
     }
 
-    public DatabaseRepo(Class<E> type,String url, String username, String password) {
+    public DatabaseRepo(Class<E> type, String url, String username, String password, IValidator<E> validator) {
         this.type = type;
         this.url = url;
         this.username = username;
         this.password = password;
+        this.validator = validator;
     }
 
     @Override
     public E add(E entity) throws EntityAlreadyExistsException {
+        validator.validate(entity);
         List<String> columns = new ArrayList<>();
         getEntityFieldNames().forEach(f->columns.add("\""+f+"\""));
 
@@ -76,7 +81,8 @@ public class DatabaseRepo<ID extends Long, E extends Entity<ID>> implements IRep
                 }
             }
         }catch (SQLException e){
-            e.printStackTrace();
+            System.out.println(e.getMessage());
+            System.exit(-1);
         }
         return null;
     }
@@ -126,7 +132,8 @@ public class DatabaseRepo<ID extends Long, E extends Entity<ID>> implements IRep
                 }
             }
         }catch (SQLException e){
-            e.printStackTrace();
+            System.out.println(e.getMessage());
+            System.exit(-1);
         }
         return null;
     }
@@ -146,7 +153,8 @@ public class DatabaseRepo<ID extends Long, E extends Entity<ID>> implements IRep
             ps.executeUpdate();
             return entity;
         }catch (SQLException e){
-            e.printStackTrace();
+            System.out.println(e.getMessage());
+            System.exit(-1);
         }
         return null;
     }
@@ -164,7 +172,8 @@ public class DatabaseRepo<ID extends Long, E extends Entity<ID>> implements IRep
             }
             return null;
         }catch (SQLException e){
-            e.printStackTrace();
+            System.out.println(e.getMessage());
+            System.exit(-1);
         }
         return null;
     }
@@ -265,7 +274,8 @@ public class DatabaseRepo<ID extends Long, E extends Entity<ID>> implements IRep
                 entities.add(entity);
             }
         }catch (SQLException e){
-            e.printStackTrace();
+            System.out.println(e.getMessage());
+            System.exit(-1);
         }
         return entities;
     }

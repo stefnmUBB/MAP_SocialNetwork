@@ -8,6 +8,7 @@ import reports.AbstractReport;
 import reports.Report;
 import reports.ReportType;
 
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.function.Predicate;
 

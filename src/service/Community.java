@@ -4,6 +4,7 @@ import domain.Friendship;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static java.lang.Math.max;
 
@@ -41,7 +42,7 @@ public class Community {
 
         while(!st.empty()) {
             Long id = st.pop();
-            for(var f:network.getAllFriendships()) {
+            network.getAllFriendships().forEach(f->{
                 if(f.containsUser(id)) {
                     Long otherId = f.getTheOtherOne(id);
                     //System.out.println(id+" "+otherId);
@@ -52,7 +53,7 @@ public class Community {
 
                     addFriends(id, otherId);
                 }
-            }
+            });
         }
     }
 
@@ -70,47 +71,42 @@ public class Community {
         List<Path> edges = new ArrayList<>();
         List<Path> edump = new ArrayList<>();
 
-        for(var u : adj.keySet()) {
-            for(var v : adj.get(u)) {
-                if(u<v) {
+        adj.keySet().forEach(u-> adj.get(u).stream().filter(v->u<v)
+                .forEach(v->{
                     paths.add(new Path(u,v));
                     paths.add(new Path(v,u));
                     edges.add(new Path(u,v));
                     edges.add(new Path(v,u));
-                }
-            }
-        }
+                }));
+
         System.out.println("Edges count = "+paths.size());
         int globalmax=0;
         for(int k=0;k<size();k++) {
-            int lenmax=globalmax;
-            for (Path path : paths) {
-                int cnt = 0;
-                for (var e : edges) {
+            final int[] lenmax = {globalmax};
+            paths.forEach(path-> {
+                final int[] cnt = {0};
+                edges.forEach(e->{
                     if (path.canJoin(e)) {
                         var p = path.join(e);
                         store.add(p);
                         System.out.println(p);
-                        lenmax = max(lenmax, p.length());
-                        cnt++;
+                        lenmax[0] = max(lenmax[0], p.length());
+                        cnt[0]++;
                     }
-                }
-                if (cnt == 0) {
+                });
+                if (cnt[0] == 0) {
                     dumper.add(path);
                 }
-            }
+            });
 
-            for(var e:edges) {
-                int cnt=0;
-                for(var p:paths) {
-                    if(p.canJoin(e))
-                        cnt++;
-                }
-                if(cnt==0)
-                {
+            edges.forEach(e->{
+                final int[] cnt = {0};
+                paths.forEach(p->{
+                    if(p.canJoin(e)) cnt[0]++;
+                });
+                if(cnt[0]==0)
                     edump.add(e);
-                }
-            }
+            });
 
             paths.clear();
             paths.addAll(store);
@@ -122,9 +118,9 @@ public class Community {
             edges.removeAll(edump);
             System.out.println("[DBG] Edges dump len = "+edump.size());
             edump.clear();
-            if(globalmax==lenmax)
+            if(globalmax== lenmax[0])
                 break;
-            globalmax=lenmax;
+            globalmax= lenmax[0];
 
             System.out.println("[DBG] Partial max path len = "+globalmax);
             System.out.println("[DBG] New cache size = " + paths.size());

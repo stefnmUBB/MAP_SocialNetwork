@@ -1,6 +1,5 @@
 package service;
 
-import config.AppContext;
 import domain.Friendship;
 import domain.Message;
 import domain.User;
@@ -10,7 +9,6 @@ import domain.validators.UserValidator;
 import repo.*;
 import reports.AbstractReport;
 
-import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,14 +41,14 @@ public class Network {
     public static Network loadDefaultNetwork() {
         IRepo<Long, User> usersRepo =
                 //new UserFileRepo(AppContext.USERS_FILE_NAME, new UserValidator());
-                new DatabaseRepo<>(User.class);
+                new DatabaseRepo<>(User.class, new UserValidator());
         IRepo<Long, Friendship> friendshipsRepo =
                 //new FriendshipFileRepo(AppContext.FRIENDSHIPS_FILE_NAME, new FriendshipValidator(usersRepo));
-                new DatabaseRepo<>(Friendship.class);
+                new DatabaseRepo<>(Friendship.class, new FriendshipValidator(usersRepo));
 
         IRepo<Long, Message> messageRepo =
                 //new MessageFileRepo(AppContext.MESSAGES_FILE_NAME, new MessageValidator());
-                new DatabaseRepo<>(Message.class);
+                new DatabaseRepo<>(Message.class, new MessageValidator());
 
         FriendshipService friendshipsServ = new FriendshipService(friendshipsRepo);
         UserService usersServ = new UserService(usersRepo, friendshipsServ);
@@ -78,22 +76,15 @@ public class Network {
 
     public List<Community> getCommunities() {
         List<Community> result = new ArrayList<>();
+        getAllUsers().forEach(user->{
+            boolean alreadyIn = result.stream()
+                    .anyMatch(com->com.contains(user.getId()));
 
-        for(var user : getAllUsers()){
-            boolean alreadyIn = false;
-            for(var com : result) {
-                if(com.contains(user.getId())) {
-                    alreadyIn = true;
-                    break;
-                }
-            }
-            //if(alreadyIn) continue;
             if(!alreadyIn) {
-                //System.out.println(user.getId());
                 Community community = new Community(this, user.getId());
                 result.add(community);
             }
-        }
+        });
         return result;
     }
 

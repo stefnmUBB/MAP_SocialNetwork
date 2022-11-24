@@ -1,7 +1,6 @@
 package ui.console.commands;
 
-import domain.User;
-import reports.AbstractReport;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ViewUsersCommand extends Command {
     public ViewUsersCommand(Object[] args, CommandContext context) {
@@ -9,11 +8,10 @@ public class ViewUsersCommand extends Command {
     }
 
     public Object execute() {
-        int count=0;
-        for(User u :context.getNetwork().getAllUsers()) {
-            System.out.println(u);
-            count++;
-        }
+        AtomicInteger count= new AtomicInteger();
+        context.getNetwork().getAllUsers().forEach(System.out::println);
+        context.getNetwork().getAllUsers().forEach(u-> count.getAndIncrement());
+
         System.out.println("Showing "+count+" users.");
         return null;
     }

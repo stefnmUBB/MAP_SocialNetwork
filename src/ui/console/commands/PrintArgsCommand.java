@@ -9,9 +9,7 @@ public class PrintArgsCommand extends Command {
     }
 
     public Object execute() {
-        for(var arg:args) {
-            print(arg.toString());
-        }
+        Arrays.stream(args).map(Object::toString).forEach(this::print);
         return String.join(", ", Arrays.stream(args).map(Object::toString).toArray(String[]::new));
     }
 }
