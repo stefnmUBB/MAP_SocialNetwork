@@ -41,14 +41,16 @@ public class Network {
     public static Network loadDefaultNetwork() {
         IRepo<Long, User> usersRepo =
                 //new UserFileRepo(AppContext.USERS_FILE_NAME, new UserValidator());
-                new DatabaseRepo<>(User.class, new UserValidator());
+                //new DatabaseRepo<>(User.class, new UserValidator());
+                new UserDatabaseRepo(new UserValidator());
         IRepo<Long, Friendship> friendshipsRepo =
                 //new FriendshipFileRepo(AppContext.FRIENDSHIPS_FILE_NAME, new FriendshipValidator(usersRepo));
-                new DatabaseRepo<>(Friendship.class, new FriendshipValidator(usersRepo));
+                //new DatabaseRepo<>(Friendship.class, new FriendshipValidator(usersRepo));
+                new FriendshipDatabaseRepo(new FriendshipValidator(usersRepo));
 
         IRepo<Long, Message> messageRepo =
                 //new MessageFileRepo(AppContext.MESSAGES_FILE_NAME, new MessageValidator());
-                new DatabaseRepo<>(Message.class, new MessageValidator());
+                new DatabaseRepo<>(Message.class, new MessageValidator(usersRepo));
 
         FriendshipService friendshipsServ = new FriendshipService(friendshipsRepo);
         UserService usersServ = new UserService(usersRepo, friendshipsServ);

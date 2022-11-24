@@ -8,6 +8,7 @@ public class Message extends Entity<Long> {
     private String content;
     private LocalDateTime dateSent;
 
+    public Message(){}
     public Message(Long authorID, String content, LocalDateTime dateSent) {
         this.authorID = authorID;
         this.content = content;

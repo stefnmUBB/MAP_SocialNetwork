@@ -31,6 +31,27 @@ public class DatabaseRepo<ID extends Long, E extends Entity<ID>> implements IRep
     }
 
     @Override
+    public Iterable<E> getAll() {
+        String sql = "Select * FROM public.\"" + getEntityTypeName()+"\" ORDER BY id ASC";
+        System.out.println(sql);
+        Set<E> entities = new HashSet<>();
+        try(Connection connection = DriverManager.getConnection(url,username,password);
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet result = ps.executeQuery()){
+            while (result.next()){
+                Long id = result.getLong("id");
+                E entity = buildEntity(result);
+                entity.setId((ID) id);
+                entities.add(entity);
+            }
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+            System.exit(-1);
+        }
+        return entities;
+    }
+
+    @Override
     public E add(E entity) throws EntityAlreadyExistsException {
         validator.validate(entity);
         List<String> columns = new ArrayList<>();
@@ -178,6 +199,8 @@ public class DatabaseRepo<ID extends Long, E extends Entity<ID>> implements IRep
         return null;
     }
 
+    /// entity type data
+
     private Class<E> type;
 
     public Iterable<String> getEntityFieldNames() {
@@ -257,27 +280,6 @@ public class DatabaseRepo<ID extends Long, E extends Entity<ID>> implements IRep
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public Iterable<E> getAll() {
-        String sql = "Select * FROM public.\"" + getEntityTypeName()+"\" ORDER BY id ASC";
-        System.out.println(sql);
-        Set<E> entities = new HashSet<>();
-        try(Connection connection = DriverManager.getConnection(url,username,password);
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ResultSet result = ps.executeQuery()){
-            while (result.next()){
-                Long id = result.getLong("id");
-                E entity = buildEntity(result);
-                entity.setId((ID) id);
-                entities.add(entity);
-            }
-        }catch (SQLException e){
-            System.out.println(e.getMessage());
-            System.exit(-1);
-        }
-        return entities;
     }
 
     public void loadFromRepo(IRepo<ID,E> repo) throws EntityAlreadyExistsException {

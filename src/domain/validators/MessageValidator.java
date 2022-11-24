@@ -2,8 +2,15 @@ package domain.validators;
 
 import domain.Message;
 import domain.User;
+import repo.IRepo;
 
 public class MessageValidator implements IValidator<Message> {
+    IRepo<Long, User> usersRepo;
+
+    public MessageValidator(IRepo<Long, User> usersRepo) {
+        this.usersRepo = usersRepo;
+    }
+
     @Override
     public void validate(Message entity) throws ValidationException {
         String content = entity.getContent();
@@ -15,6 +22,9 @@ public class MessageValidator implements IValidator<Message> {
         }
         if(!content.matches("^[a-zA-Z0-9.\\-! ]*$")){
             throw new ValidationException("Invalid characters detected in message content");
+        }
+        if (usersRepo.getById(entity.getAuthorID()) == null) {
+            throw new ValidationException("User author id does not exist.");
         }
     }
 }
