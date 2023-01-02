@@ -5,12 +5,23 @@ import java.util.Objects;
 
 public class Message extends Entity<Long> {
     private Long authorID;
+
+    private Long receiverID;
     private String content;
     private LocalDateTime dateSent;
 
+    public Long getReceiverID() {
+        return receiverID;
+    }
+
+    public void setReceiverID(Long receiverID) {
+        this.receiverID = receiverID;
+    }
+
     public Message(){}
-    public Message(Long authorID, String content, LocalDateTime dateSent) {
+    public Message(Long authorID, Long receiverID, String content, LocalDateTime dateSent) {
         this.authorID = authorID;
+        this.receiverID = receiverID;
         this.content = content;
         this.dateSent = dateSent;
     }

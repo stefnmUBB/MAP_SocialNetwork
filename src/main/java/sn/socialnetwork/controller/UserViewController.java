@@ -2,7 +2,6 @@ package sn.socialnetwork.controller;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -10,15 +9,17 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import sn.socialnetwork.domain.Friendship;
+import sn.socialnetwork.domain.Message;
 import sn.socialnetwork.domain.User;
+import sn.socialnetwork.domain.validators.ValidationException;
 import sn.socialnetwork.repo.EntityAlreadyExistsException;
 import sn.socialnetwork.service.EntityIdNotFoundException;
 import sn.socialnetwork.utils.Constants;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -66,40 +67,40 @@ public class UserViewController extends SocialNetworkController {
     @FXML
     TextField ageTextField;
 
-    @FXML
-    protected void initialize() {
+    void initTabsUI() {
         tabControl.getTabs().forEach(tab->{
             Platform.runLater(() -> {
+                if(tab.getGraphic()==null) return;
                 Parent tabContainer = tab.getGraphic().getParent().getParent();
                 tabContainer.setRotate(90);
                 tabContainer.setTranslateY(-100);
             });
         });
+    }
 
+    void initFriendsTable() {
         friendNameColumn.setCellValueFactory(
                 new PropertyValueFactory<User, String>("firstName"));
         friendSurnameColumn.setCellValueFactory(
                 new PropertyValueFactory<User, String>("lastName"));
         friendAgeColumn.setCellValueFactory(
                 new PropertyValueFactory<User, Integer>("age"));
-        friendSinceColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<User, String>, ObservableValue<String>>() {
-            @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<User, String> p) {
-                User u = p.getValue();
+        friendSinceColumn.setCellValueFactory(p -> {
+            User u = p.getValue();
 
-                LocalDateTime date = StreamSupport.stream(getNetwork().getAllFriendships().spliterator(),false)
-                        .filter(f->f.containsUser(user.getId()) && f.containsUser(u.getId()))
-                        .map(Friendship::getFriendsFrom)
-                        .findFirst().orElse(null);
-                if(date==null)
-                    return new SimpleStringProperty("");
-                return new SimpleStringProperty(date.format(Constants.DATE_TIME_FORMATTER));
-            }
+            LocalDateTime date = StreamSupport.stream(getNetwork().getAllFriendships().spliterator(),false)
+                    .filter(f->f.containsUser(user.getId()) && f.containsUser(u.getId()))
+                    .map(Friendship::getFriendsFrom)
+                    .findFirst().orElse(null);
+            if(date==null)
+                return new SimpleStringProperty("");
+            return new SimpleStringProperty(date.format(Constants.DATE_TIME_FORMATTER));
         });
 
         friendsTable.setItems(friends);
+    }
 
-
+    void initDiscover() {
         discNameColumn.setCellValueFactory(
                 new PropertyValueFactory<User, String>("firstName"));
         discSurnameColumn.setCellValueFactory(
@@ -108,36 +109,39 @@ public class UserViewController extends SocialNetworkController {
         discTable.setItems(discUsers);
 
         searchTextField.textProperty().addListener(o->discoverFilter());
+    }
 
-        fshipUserNameColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Friendship, String>, ObservableValue<String>>() {
-            @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<Friendship, String> p) {
-                Friendship f = p.getValue();
-                User friend = getNetwork().getUserById(f.getTheOtherOne(user.getId()));
-                return new SimpleStringProperty(friend.getLastName()+" "+friend.getFirstName());
-            }
+    void initRequestsTable() {
+        fshipUserNameColumn.setCellValueFactory(p -> {
+            Friendship f = p.getValue();
+            User friend = getNetwork().getUserById(f.getTheOtherOne(user.getId()));
+            return new SimpleStringProperty(friend.getLastName()+" "+friend.getFirstName());
         });
 
-        fshipSentColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Friendship, String>, ObservableValue<String>>() {
-            @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<Friendship, String> p) {
-                Friendship f = p.getValue();
-                return new SimpleStringProperty(f.getFriendsFrom().format(Constants.DATE_TIME_FORMATTER));
-            }
+        fshipSentColumn.setCellValueFactory(p -> {
+            Friendship f = p.getValue();
+            return new SimpleStringProperty(f.getFriendsFrom().format(Constants.DATE_TIME_FORMATTER));
         });
 
-        fshipStatusColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Friendship, String>, ObservableValue<String>>() {
-            @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<Friendship, String> p) {
-                Friendship f = p.getValue();
-                if(f.isSender(user.getId())) {
-                    return new SimpleStringProperty("Outcome");
-                }
-                return new SimpleStringProperty("Income");
+        fshipStatusColumn.setCellValueFactory(p -> {
+            Friendship f = p.getValue();
+            if(f.isSender(user.getId())) {
+                return new SimpleStringProperty("Outcome");
             }
+            return new SimpleStringProperty("Income");
         });
 
         fshipsTable.setItems(requests);
+    }
+
+    @FXML
+    protected void initialize() {
+        initTabsUI();
+        initFriendsTable();
+        initDiscover();
+        initRequestsTable();
+        initChatFriendsTable();
+        initChatListView();
     }
 
 
@@ -305,5 +309,88 @@ public class UserViewController extends SocialNetworkController {
         loginViewStage.setResizable(false);
         loginViewStage.show();
         getStage(friendsTable).close();
+    }
+
+
+    @FXML
+    TableView<User> chatFriendsTable;
+
+    @FXML
+    TableColumn<User, String> chatFriendsTableNameColumn;
+
+    @FXML
+    TextField messageTextField;
+
+    @FXML
+    Button sendButton;
+
+    User chatUser = null;
+
+    ObservableList<Message> messages = FXCollections.observableArrayList();
+
+    @FXML
+    ListView<Message> chatListView;
+
+    void loadChatListView() {
+        messages.clear();
+        if(chatUser==null) return;
+        messages.addAll(getNetwork()
+                .getMessagesBetween(user.getId(), chatUser.getId()));
+    }
+
+    void initChatFriendsTable() {
+        chatFriendsTableNameColumn.setCellValueFactory(p-> {
+            User u = p.getValue();
+            return new SimpleStringProperty(u.getFullName());
+        });
+        chatFriendsTable.setItems(friends);
+    }
+
+    void initChatListView() {
+        chatListView.setCellFactory(cell->new ListCell<Message>() {
+            @Override
+            protected void updateItem(Message message, boolean empty) {
+                super.updateItem(message, empty);
+                if (!empty && message != null) {
+                    String sender = "";
+
+                    if(Objects.equals(message.getAuthorID(), user.getId())) {
+                        sender = user.getFirstName();
+                    }
+                    else {
+                        sender = chatUser.getFirstName();
+                    }
+
+                    setText(sender + " : " +message.getContent());
+
+                    if (Objects.equals(message.getAuthorID(), user.getId())) {
+                        setStyle("-fx-font-weight: bold");
+                    } else {
+                        setStyle(null);
+                    }
+                } else {
+                    setText(null);
+                }
+            }
+        });
+        chatListView.setItems(messages);
+    }
+
+    public void chatFriendsTableClicked() {
+        chatUser = chatFriendsTable.getSelectionModel().getSelectedItem();
+        loadChatListView();
+    }
+
+    public void sendButtonClicked() {
+        try {
+            Message message = new Message(user.getId(), chatUser.getId()
+                    ,messageTextField.getText(), LocalDateTime.now());
+            getNetwork().addMessage(message);
+            messages.add(message);
+            messageTextField.setText("");
+        }
+        catch (Exception | EntityAlreadyExistsException e) {
+            showErrorBox(e.getMessage());
+        }
     }
 }

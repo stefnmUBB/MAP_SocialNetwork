@@ -59,5 +59,4 @@ public abstract class Service<ID, E extends Entity<ID>> implements IService<ID, 
         return repo.getAll();
     }
 
-
 }

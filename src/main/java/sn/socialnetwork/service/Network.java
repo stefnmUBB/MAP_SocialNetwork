@@ -11,6 +11,7 @@ import sn.socialnetwork.reports.AbstractReport;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -126,7 +127,21 @@ public class Network {
         return result;
     }
 
+    public List<Message> getMessagesBetween(Long user1ID, Long user2ID) {
+        return StreamSupport.stream(messageServ.getAll().spliterator(), false)
+                .filter(m->
+                        (Objects.equals(m.getAuthorID(), user1ID)
+                      && Objects.equals(m.getReceiverID(), user2ID))
+                      ||(Objects.equals(m.getAuthorID(), user2ID)
+                      && Objects.equals(m.getReceiverID(), user1ID))
+                        ).toList();
+    }
+
     public int communitiesCount() {
         return getCommunities().size();
+    }
+
+    public AbstractReport addMessage(Message m) throws EntityAlreadyExistsException {
+        return messageServ.add(m);
     }
 }

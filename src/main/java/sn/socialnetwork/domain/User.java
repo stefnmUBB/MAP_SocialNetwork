@@ -103,4 +103,8 @@ public class User extends Entity<Long> {
     public void setAge(Integer age) {
         this.age = age;
     }
+
+    public String getFullName() {
+        return getLastName() + " " + getFirstName();
+    }
 }

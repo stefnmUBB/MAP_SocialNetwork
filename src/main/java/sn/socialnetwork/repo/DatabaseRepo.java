@@ -34,7 +34,7 @@ public class DatabaseRepo<ID extends Long, E extends Entity<ID>> implements IRep
     public Iterable<E> getAll() {
         String sql = "Select * FROM public.\"" + getEntityTypeName()+"\" ORDER BY id ASC";
         System.out.println(sql);
-        Set<E> entities = new HashSet<>();
+        List<E> entities = new ArrayList<>();
         try(Connection connection = DriverManager.getConnection(url,username,password);
             PreparedStatement ps = connection.prepareStatement(sql);
             ResultSet result = ps.executeQuery()){
