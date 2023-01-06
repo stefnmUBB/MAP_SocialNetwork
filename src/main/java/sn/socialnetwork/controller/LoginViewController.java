@@ -47,4 +47,9 @@ public class LoginViewController extends SocialNetworkController {
         errorLabel.setText(text);
         errorLabel.setVisible(!Objects.equals(text, ""));
     }
+
+    public void setCredentials(String email, String password) {
+        emailTextField.setText(email);
+        passwordTextField.setText(password);
+    }
 }

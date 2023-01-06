@@ -27,6 +27,7 @@ public class SocialNetworkController {
             Stage stage = new Stage();
             FXMLLoader fxmlLoader = SocialNetworkApplication.getLoader(view);
             Scene scene = new Scene(fxmlLoader.load(), width, height);
+            scene.setUserData(fxmlLoader);
 
             SocialNetworkController controller = fxmlLoader.getController();
             controller.setNetwork(Globals.getNetwork());

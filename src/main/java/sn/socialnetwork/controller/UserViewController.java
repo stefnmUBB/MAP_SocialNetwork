@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -275,6 +276,9 @@ public class UserViewController extends SocialNetworkController {
     Button removeFriendButton;
 
     @FXML
+    Button loginAsFriendButton;
+
+    @FXML
     public void friendsTableClicked() {
         var selectedFriend = friendsTable.getSelectionModel().getSelectedItem();
         System.out.println("Friend = "+selectedFriend);
@@ -287,6 +291,7 @@ public class UserViewController extends SocialNetworkController {
         System.out.println("Friendship = "+selectedExistentFriendship);
 
         removeFriendButton.setDisable(selectedExistentFriendship==null);
+        loginAsFriendButton.setDisable(selectedExistentFriendship==null);
     }
 
     @FXML
@@ -392,5 +397,25 @@ public class UserViewController extends SocialNetworkController {
         catch (Exception | EntityAlreadyExistsException e) {
             showErrorBox(e.getMessage());
         }
+    }
+
+    public void loginAsFriendButtonClicked() {
+        if(selectedExistentFriendship==null)
+            return;
+        Stage loginViewStage = createStage("login-view.fxml",600,400);
+
+        User friend = getNetwork().getUserById(selectedExistentFriendship
+                .getTheOtherOne(user.getId()));
+
+        FXMLLoader loader = (FXMLLoader) (loginViewStage
+                .getScene().getUserData());
+        ((LoginViewController)(loader.getController())).setCredentials(
+                friend.getEmail(),
+                friend.getPassword()
+        );
+
+        loginViewStage.setResizable(false);
+        loginViewStage.show();
+        getStage(friendsTable).close();
     }
 }
