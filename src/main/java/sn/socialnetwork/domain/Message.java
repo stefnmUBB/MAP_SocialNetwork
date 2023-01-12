@@ -5,7 +5,6 @@ import java.util.Objects;
 
 public class Message extends Entity<Long> {
     private Long authorID;
-
     private Long receiverID;
     private String content;
     private LocalDateTime dateSent;

@@ -367,6 +367,8 @@ public class UserViewController extends SocialNetworkController {
                     }
 
                     setText(sender + " : " +message.getContent());
+                    setTooltip(new Tooltip("Sent : "+message.getDateSent()
+                            .format(Constants.DATE_TIME_FORMATTER)));
 
                     if (Objects.equals(message.getAuthorID(), user.getId())) {
                         setStyle("-fx-font-weight: bold");
